@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bakyenga Traders - Modern Point of Sale & Inventory System</title>
+  <meta name="description" content="Commercial Point of Sale, Inventory Management, and Debtor Tracking System for Bakyenga Traders" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app" class="pos-app">
+    <!-- Top System Header -->
+    <header class="top-nav">
+      <div class="brand-zone">
+        <img src="logo.jpg" alt="Bakyenga Traders Logo" class="brand-logo" onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';" />
+        <div id="logo-fallback" class="logo-fallback">BT</div>
+        <div class="brand-meta">
+          <div class="brand-title-wrap">
+            <h1 class="brand-name">BAKYENGA TRADERS</h1>
+            <span class="brand-badge">RETAIL & WHOLESALE</span>
+          </div>
+          <span class="brand-sub">Plot 14, Commercial Plaza, High Street &bull; Kampala, Uganda</span>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="shift-status-pill" id="shift-pill">
+          <span class="live-dot pulse"></span>
+          <span class="shift-text" id="header-shift-text">Shift Active &bull; Register #01</span>
+          <span class="drawer-bal-tag" id="header-drawer-tag">Float: UGX 150,000</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="live-clock">
+          <div class="clock-time" id="digital-clock">10:00:00 AM</div>
+          <div class="clock-date" id="digital-date">Friday, 02 Oct 2026</div>
+        </div>
+
+        <div class="user-profile-btn" id="btn-switch-user" title="Click to switch user or sign in">
+          <div class="user-avatar" id="current-user-avatar">BB</div>
+          <div class="user-info">
+            <div class="user-name-row">
+              <span class="user-name" id="current-cashier-name">Brian Bakyenga</span>
+              <span class="role-badge admin" id="current-user-role-badge">ADMIN</span>
+            </div>
+            <span class="user-role" id="current-user-title">Main Admin / Owner</span>
+          </div>
+          <i data-lucide="chevrons-up-down" class="switch-icon" style="width:14px; height:14px; color: var(--text-dim);"></i>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn-icon" id="sound-toggle-btn" title="Toggle Sound Feedback">
+            <i data-lucide="volume-2" id="sound-icon"></i>
+          </button>
+          <button class="btn-icon" id="shortcuts-btn" title="Keyboard Shortcuts (F1, F2, F4, Esc)">
+            <i data-lucide="keyboard"></i>
+          </button>
+          <button class="btn-icon" id="fullscreen-btn" title="Toggle Fullscreen">
+            <i data-lucide="maximize"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Navigation Bar -->
+    <nav class="main-tabs-nav">
+      <div class="tabs-container">
+        <button class="nav-tab active" data-tab="register-tab">
+          <i data-lucide="shopping-bag"></i>
+          <span>POS Register</span>
+          <span class="badge-counter cart-badge-num" id="nav-cart-count">0</span>
+        </button>
+        <button class="nav-tab" data-tab="inventory-tab">
+          <i data-lucide="boxes"></i>
+          <span>Inventory & Stock</span>
+          <span class="badge-counter alert-badge" id="nav-low-stock-count">0</span>
+        </button>
+        <button class="nav-tab admin-only-tab" data-tab="sales-tab" id="nav-tab-sales">
+          <i data-lucide="line-chart"></i>
+          <span>Sales & Analytics</span>
+          <span class="tab-lock-icon" id="sales-lock-icon" style="display:none;"><i data-lucide="lock" style="width:12px; height:12px;"></i></span>
+        </button>
+        <button class="nav-tab" data-tab="debtors-tab">
+          <i data-lucide="users"></i>
+          <span>Customers & Debtors</span>
+          <span class="badge-counter info-badge" id="nav-debtors-count">0</span>
+        </button>
+        <button class="nav-tab" data-tab="shift-tab" id="nav-tab-shift">
+          <i data-lucide="landmark"></i>
+          <span>Shift & Cash Drawer</span>
+        </button>
+        <button class="nav-tab admin-only-tab" data-tab="settings-tab" id="nav-tab-settings">
+          <i data-lucide="settings"></i>
+          <span>Store Settings & Staff</span>
+          <span class="tab-lock-icon" id="settings-lock-icon" style="display:none;"><i data-lucide="lock" style="width:12px; height:12px;"></i></span>
+        </button>
+      </div>
+
+      <div class="nav-quick-stat" id="nav-rev-container">
+        <span class="stat-label">Today's Revenue:</span>
+        <span class="stat-val text-emerald" id="nav-today-rev">UGX 0</span>
+        <span class="stat-val text-muted font-mono" id="nav-rev-hidden" style="display:none;">
+          <i data-lucide="lock" style="width:13px; height:13px; vertical-align:middle;"></i> UGX &bull;&bull;&bull;&bull;&bull;&bull;
+        </span>
+      </div>
+    </nav>
+
+    <!-- Application Body Views -->
+    <main class="app-main-content">
+
+      <!-- ============================================== -->
+      <!-- TAB 1: POS REGISTER -->
+      <!-- ============================================== -->
+      <section class="tab-view active" id="register-tab">
+        <div class="register-grid">
+          
+          <!-- Left Column: Catalog & Item Selection -->
+          <div class="catalog-pane">
+            
+            <!-- Search & Filter Controls -->
+            <div class="catalog-toolbar">
+              <div class="search-input-wrap">
+                <i data-lucide="search" class="search-icon"></i>
+                <input 
+                  type="text" 
+                  id="catalog-search" 
+                  placeholder="Scan barcode or search product name, SKU, category... (Press F1)" 
+                  autocomplete="off"
+                />
+                <button class="clear-search-btn" id="clear-search-btn" style="display: none;">&times;</button>
+                <div class="barcode-indicator" title="Barcode reader is ready">
+                  <i data-lucide="scan-barcode"></i>
+                  <span>Ready</span>
+                </div>
+              </div>
+
+              <div class="category-filter-pills" id="category-pills">
+                <button class="cat-pill active" data-category="ALL">All Items</button>
+                <button class="cat-pill" data-category="Grains & Flour">Grains & Flour</button>
+                <button class="cat-pill" data-category="Beverages & Drinks">Beverages</button>
+                <button class="cat-pill" data-category="Household & Cleaning">Household</button>
+                <button class="cat-pill" data-category="Cooking Essentials">Cooking Oils & Essentials</button>
+                <button class="cat-pill" data-category="Hardware & Tools">Hardware & Building</button>
+                <button class="cat-pill" data-category="Personal Care">Personal Care</button>
+              </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="products-grid-scroll">
+              <div class="products-grid" id="products-grid">
+                <!-- Injected via JavaScript -->
+              </div>
+              <div class="empty-catalog-state" id="empty-catalog" style="display: none;">
+                <i data-lucide="search-x"></i>
+                <h3>No matching products found</h3>
+                <p>Try searching with another keyword or barcode</p>
+                <button class="btn btn-secondary btn-sm" id="btn-reset-filters">Reset Search Filters</button>
+              </div>
+            </div>
+
+            <!-- Bottom Catalog Quick Bar -->
+            <div class="catalog-footer">
+              <div class="catalog-summary">
+                <span id="catalog-count-text">Showing 24 products</span>
+              </div>
+              <div class="quick-helpers">
+                <button class="btn btn-ghost btn-sm" id="btn-quick-custom-item">
+                  <i data-lucide="plus-circle"></i> Quick Custom Item (F9)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Register Order Cart & Checkout -->
+          <div class="cart-pane">
+            
+            <!-- Cart Header & Held Tabs -->
+            <div class="cart-header">
+              <div class="held-tabs-bar">
+                <div class="tabs-list" id="held-tickets-list">
+                  <!-- Dynamically rendered tabs for parked orders -->
+                </div>
+                <button class="btn-new-tab" id="btn-add-ticket" title="Hold current & open new ticket (F2)">
+                  <i data-lucide="plus"></i>
+                </button>
+              </div>
+
+              <!-- Customer Selector Strip -->
+              <div class="cart-customer-strip">
+                <div class="cust-select-group">
+                  <i data-lucide="user-check"></i>
+                  <select id="cart-customer-select" class="cust-select">
+                    <option value="walk-in">Walk-in Customer (General)</option>
+                    <!-- Injected customer list -->
+                  </select>
+                </div>
+                <button class="btn btn-ghost btn-xs" id="btn-add-cust-quick" title="Register New Customer">
+                  <i data-lucide="user-plus"></i> New
+                </button>
+              </div>
+            </div>
+
+            <!-- Cart Items Scrollable List -->
+            <div class="cart-items-container">
+              <div class="cart-table-head">
+                <span class="th-item">Product</span>
+                <span class="th-qty">Qty</span>
+                <span class="th-price">Price</span>
+                <span class="th-total">Total</span>
+                <span class="th-action"></span>
+              </div>
+              
+              <div class="cart-items-list" id="cart-items-list">
+                <!-- Injected via JavaScript -->
+              </div>
+
+              <div class="cart-empty-state" id="cart-empty-state">
+                <div class="empty-icon-wrap">
+                  <i data-lucide="shopping-cart"></i>
+                </div>
+                <h4>Cart is Empty</h4>
+                <p>Click any item or scan a barcode to begin register</p>
+                <div class="shortcuts-mini-tip">
+                  <span>Press <kbd>F1</kbd> to search &bull; <kbd>F4</kbd> to pay</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cart Financials & Payment Actions -->
+            <div class="cart-footer">
+              
+              <!-- Adjustments: Discount & Tax -->
+              <div class="cart-adjustments">
+                <div class="adj-row">
+                  <span class="adj-label">Order Discount:</span>
+                  <div class="discount-input-pill">
+                    <input type="number" id="cart-discount-input" min="0" placeholder="0" value="0" />
+                    <select id="cart-discount-type">
+                      <option value="UGX">UGX</option>
+                      <option value="%">%</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="adj-row">
+                  <span class="adj-label">Value Added Tax (VAT 18%):</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="tax-toggle" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                  <span class="tax-status-text" id="tax-status-label">Exempt</span>
+                </div>
+              </div>
+
+              <!-- Breakdown totals -->
+              <div class="cart-totals-breakdown">
+                <div class="total-line subtotal-line">
+                  <span>Subtotal (<span id="cart-item-count">0</span> items)</span>
+                  <span class="val" id="cart-subtotal-val">UGX 0</span>
+                </div>
+                <div class="total-line discount-line" id="discount-display-row" style="display: none;">
+                  <span>Discount</span>
+                  <span class="val text-amber" id="cart-discount-val">- UGX 0</span>
+                </div>
+                <div class="total-line tax-line" id="tax-display-row" style="display: none;">
+                  <span>VAT (18%)</span>
+                  <span class="val" id="cart-tax-val">UGX 0</span>
+                </div>
+                <div class="total-line grand-total-line">
+                  <span>Total Payable:</span>
+                  <span class="val grand-total-val" id="cart-total-val">UGX 0</span>
+                </div>
+              </div>
+
+              <!-- Quick Tender Cash Buttons -->
+              <div class="quick-cash-row" id="quick-cash-row">
+                <button class="quick-cash-btn" data-type="exact">Exact</button>
+                <button class="quick-cash-btn" data-add="5000">+5,000</button>
+                <button class="quick-cash-btn" data-add="10000">+10,000</button>
+                <button class="quick-cash-btn" data-add="20000">+20,000</button>
+                <button class="quick-cash-btn" data-add="50000">+50,000</button>
+                <button class="quick-cash-btn" data-add="100000">+100,000</button>
+              </div>
+
+              <!-- Main Checkout & Action Buttons -->
+              <div class="cart-action-buttons">
+                <button class="btn btn-secondary btn-icon-only" id="btn-clear-cart" title="Discard Current Cart">
+                  <i data-lucide="trash-2"></i>
+                </button>
+                <button class="btn btn-secondary" id="btn-hold-cart" title="Hold Order for Later">
+                  <i data-lucide="pause-circle"></i> Hold (F2)
+                </button>
+                <button class="btn btn-primary btn-checkout" id="btn-pay-now">
+                  <div class="checkout-left">
+                    <i data-lucide="credit-card"></i>
+                    <span>PROCESS PAYMENT (F4)</span>
+                  </div>
+                  <span class="checkout-sum" id="checkout-btn-total">UGX 0</span>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 2: INVENTORY & STOCK MANAGEMENT -->
+      <!-- ============================================== -->
+      <section class="tab-view" id="inventory-tab">
+        <div class="section-container">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Inventory & Stock Catalog</h2>
+              <p class="section-desc">Manage product pricing, cost values, stock levels, and alert thresholds.</p>
+            </div>
+            <div class="header-btns">
+              <button class="btn btn-secondary" id="btn-export-inventory-csv">
+                <i data-lucide="download"></i> Export CSV
+              </button>
+              <button class="btn btn-primary" id="btn-add-product-modal">
+                <i data-lucide="plus"></i> Add New Product
+              </button>
+            </div>
+          </div>
+
+          <!-- Inventory Filter Ribbon -->
+          <div class="inventory-controls-bar">
+            <div class="search-input-wrap">
+              <i data-lucide="search" class="search-icon"></i>
+              <input type="text" id="inventory-search" placeholder="Search by SKU, Product Name, or Category..." />
+            </div>
+
+            <div class="filter-group">
+              <select id="inventory-cat-filter" class="form-select">
+                <option value="ALL">All Categories</option>
+                <!-- Populated dynamically -->
+              </select>
+
+              <button class="btn btn-secondary btn-sm" id="btn-quick-new-category" title="Create a custom category">
+                <i data-lucide="folder-plus"></i> + Category
+              </button>
+
+              <select id="inventory-stock-filter" class="form-select">
+                <option value="ALL">All Stock Statuses</option>
+                <option value="IN_STOCK">In Stock (> 10)</option>
+                <option value="LOW_STOCK">Low Stock (≤ Alert Level)</option>
+                <option value="OUT_OF_STOCK">Out of Stock (0)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Inventory Table -->
+          <div class="data-table-card">
+            <div class="table-responsive">
+              <table class="custom-table" id="inventory-table">
+                <thead>
+                  <tr>
+                    <th>Product & Barcode</th>
+                    <th>Category</th>
+                    <th class="col-cost admin-only-cell">Cost Price</th>
+                    <th>Selling Price</th>
+                    <th>Current Stock</th>
+                    <th class="col-margin admin-only-cell">Margin (%)</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="inventory-table-body">
+                  <!-- Populated via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 3: SALES & ANALYTICS -->
+      <!-- ============================================== -->
+      <section class="tab-view" id="sales-tab">
+        <!-- Worker Access Restricted Notice -->
+        <div class="access-denied-wrapper" id="sales-restricted-screen" style="display: none;">
+          <div class="access-denied-card">
+            <div class="denied-icon-wrap">
+              <i data-lucide="shield-alert" class="text-ruby"></i>
+            </div>
+            <h2>Access Restricted &bull; Store Admin Only</h2>
+            <p>Financial cash reports, revenue analytics, and gross profit margins are confidential to Bakyenga Traders management. Workers and cashiers are restricted from viewing business financial ledgers.</p>
+            <div class="admin-unlock-box">
+              <div class="current-role-info">Active Account: <strong id="denied-user-name">Grace Natukunda</strong> <span class="role-badge cashier" id="denied-role-badge">CASHIER</span></div>
+              <button class="btn btn-primary mt-3" id="btn-sales-switch-admin">
+                <i data-lucide="key-round"></i> Switch / Log in as Main Admin
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-container" id="sales-admin-content">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Sales Analytics & Receipts Ledger</h2>
+              <p class="section-desc">Complete financial records, profit margins, and transaction history.</p>
+            </div>
+            <div class="header-btns">
+              <button class="btn btn-secondary" id="btn-export-sales-csv">
+                <i data-lucide="download"></i> Export Ledger to CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- KPI Metric Cards -->
+          <div class="analytics-kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-icon emerald">
+                <i data-lucide="banknote"></i>
+              </div>
+              <div class="kpi-details">
+                <span class="kpi-label">Today's Gross Sales</span>
+                <h3 class="kpi-value" id="kpi-today-sales">UGX 0</h3>
+                <span class="kpi-sub" id="kpi-today-count">0 Transactions completed</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon sapphire">
+                <i data-lucide="trending-up"></i>
+              </div>
+              <div class="kpi-details">
+                <span class="kpi-label">Estimated Gross Profit</span>
+                <h3 class="kpi-value text-sapphire" id="kpi-today-profit">UGX 0</h3>
+                <span class="kpi-sub" id="kpi-margin-pct">0% Average Margin</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon amber">
+                <i data-lucide="shopping-cart"></i>
+              </div>
+              <div class="kpi-details">
+                <span class="kpi-label">Average Basket Size</span>
+                <h3 class="kpi-value text-amber" id="kpi-avg-basket">UGX 0</h3>
+                <span class="kpi-sub">Per completed customer order</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon ruby">
+                <i data-lucide="alert-triangle"></i>
+              </div>
+              <div class="kpi-details">
+                <span class="kpi-label">Items Low / Out of Stock</span>
+                <h3 class="kpi-value text-ruby" id="kpi-low-stock-num">0</h3>
+                <span class="kpi-sub">Require immediate purchase order</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Breakdown & Top Selling -->
+          <div class="analytics-split-grid">
+            <div class="analytics-card">
+              <h3 class="card-title">
+                <i data-lucide="pie-chart"></i> Revenue by Payment Method
+              </h3>
+              <div class="payment-bars-list" id="payment-method-breakdown">
+                <!-- Injected via JavaScript -->
+              </div>
+            </div>
+
+            <div class="analytics-card">
+              <h3 class="card-title">
+                <i data-lucide="flame"></i> Top 5 Selling Products
+              </h3>
+              <div class="top-products-list" id="top-products-list">
+                <!-- Injected via JavaScript -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Sales Transactions Ledger -->
+          <div class="data-table-card mt-6">
+            <div class="card-table-header">
+              <h3 class="card-title">Completed Orders Ledger</h3>
+              <div class="search-mini">
+                <input type="text" id="sales-search-input" placeholder="Search receipt #, customer, cashier..." />
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table" id="sales-history-table">
+                <thead>
+                  <tr>
+                    <th>Receipt No.</th>
+                    <th>Date & Time</th>
+                    <th>Customer</th>
+                    <th>Payment Method</th>
+                    <th>Items</th>
+                    <th>Total Amount</th>
+                    <th>Cashier</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="sales-table-body">
+                  <!-- Populated via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 4: CUSTOMERS & CREDIT (DEBTORS) -->
+      <!-- ============================================== -->
+      <section class="tab-view" id="debtors-tab">
+        <div class="section-container">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Customer Directory & Debtor Ledger</h2>
+              <p class="section-desc">Manage frequent wholesale buyers, track outstanding store credit, and record repayments.</p>
+            </div>
+            <div class="header-btns">
+              <button class="btn btn-primary" id="btn-add-customer-modal">
+                <i data-lucide="user-plus"></i> Add New Customer
+              </button>
+            </div>
+          </div>
+
+          <!-- Debtor Metrics -->
+          <div class="debtor-stats-grid">
+            <div class="stat-pill-card">
+              <span class="label">Total Registered Customers</span>
+              <span class="value" id="debtor-stat-total-cust">0</span>
+            </div>
+            <div class="stat-pill-card">
+              <span class="label">Active Debtors (With Balances)</span>
+              <span class="value text-amber" id="debtor-stat-active-count">0</span>
+            </div>
+            <div class="stat-pill-card">
+              <span class="label">Total Outstanding Credit Due</span>
+              <span class="value text-ruby" id="debtor-stat-total-debt">UGX 0</span>
+            </div>
+          </div>
+
+          <!-- Customer Table -->
+          <div class="data-table-card mt-6">
+            <div class="table-responsive">
+              <table class="custom-table" id="customers-table">
+                <thead>
+                  <tr>
+                    <th>Customer Name</th>
+                    <th>Phone / Contact</th>
+                    <th>Address / Location</th>
+                    <th>Credit Limit</th>
+                    <th>Outstanding Debt</th>
+                    <th>Total Spent</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="customers-table-body">
+                  <!-- Populated via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 5: SHIFT & CASH DRAWER (Z-REPORT) -->
+      <!-- ============================================== -->
+      <section class="tab-view" id="shift-tab">
+        <div class="section-container">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Cash Drawer & Daily Shift Summary</h2>
+              <p class="section-desc">Record petty cash float, payouts/cash-in, verify register balance, and perform Day-End Z-Report.</p>
+            </div>
+            <div class="header-btns">
+              <button class="btn btn-secondary" id="btn-cash-movement-modal">
+                <i data-lucide="arrow-left-right"></i> Cash In / Cash Out
+              </button>
+              <button class="btn btn-danger" id="btn-close-shift-modal">
+                <i data-lucide="lock"></i> End Shift & Print Z-Report
+              </button>
+            </div>
+          </div>
+
+          <!-- Drawer Snapshot -->
+          <div class="shift-snapshot-card">
+            <div class="shift-info-col">
+              <div class="shift-badge-row">
+                <span class="status-pill status-open">SHIFT IN PROGRESS</span>
+                <span class="shift-id-tag">Shift Ref: #SH-20261002-01</span>
+              </div>
+              <div class="shift-meta-grid">
+                <div>
+                  <span class="meta-label">Cashier on Duty</span>
+                  <strong class="meta-val" id="shift-cashier-display">Brian Bakyenga</strong>
+                </div>
+                <div>
+                  <span class="meta-label">Shift Started</span>
+                  <strong class="meta-val" id="shift-start-time">08:00 AM Today</strong>
+                </div>
+                <div>
+                  <span class="meta-label">Opening Float Balance</span>
+                  <strong class="meta-val text-sapphire" id="shift-opening-float">UGX 150,000</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="drawer-tally-col">
+              <span class="tally-label">EXPECTED CASH IN DRAWER</span>
+              <h2 class="tally-amount" id="drawer-expected-cash">UGX 150,000</h2>
+              <span class="tally-sub">Float + Cash Sales - Cash Out</span>
+            </div>
+          </div>
+
+          <!-- Shift Movements & Tender Breakdown -->
+          <div class="shift-breakdown-grid mt-6">
+            <div class="analytics-card">
+              <h3 class="card-title"><i data-lucide="calculator"></i> Shift Revenue by Tender</h3>
+              <div class="tender-table-wrap">
+                <table class="tender-table">
+                  <tbody>
+                    <tr>
+                      <td><i data-lucide="banknote"></i> Cash Sales</td>
+                      <td class="text-right font-mono" id="shift-tender-cash">UGX 0</td>
+                    </tr>
+                    <tr>
+                      <td><i data-lucide="smartphone"></i> MTN Mobile Money</td>
+                      <td class="text-right font-mono text-amber" id="shift-tender-mtn">UGX 0</td>
+                    </tr>
+                    <tr>
+                      <td><i data-lucide="phone-call"></i> Airtel Money</td>
+                      <td class="text-right font-mono text-ruby" id="shift-tender-airtel">UGX 0</td>
+                    </tr>
+                    <tr>
+                      <td><i data-lucide="credit-card"></i> Card / Bank Terminal</td>
+                      <td class="text-right font-mono text-sapphire" id="shift-tender-card">UGX 0</td>
+                    </tr>
+                    <tr>
+                      <td><i data-lucide="file-text"></i> Store Credit (On Account)</td>
+                      <td class="text-right font-mono" id="shift-tender-credit">UGX 0</td>
+                    </tr>
+                    <tr class="highlight-row">
+                      <td><strong>Total Gross Shift Collections</strong></td>
+                      <td class="text-right font-mono font-bold text-emerald" id="shift-tender-total">UGX 0</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="analytics-card">
+              <h3 class="card-title"><i data-lucide="receipt"></i> Cash Movements Log (Float / Petty Cash)</h3>
+              <div class="cash-movements-list" id="cash-movements-list">
+                <!-- Movements list -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- TAB 6: SETTINGS & BACKUP -->
+      <!-- ============================================== -->
+      <section class="tab-view" id="settings-tab">
+        <!-- Worker Access Restricted Notice -->
+        <div class="access-denied-wrapper" id="settings-restricted-screen" style="display: none;">
+          <div class="access-denied-card">
+            <div class="denied-icon-wrap">
+              <i data-lucide="shield-alert" class="text-ruby"></i>
+            </div>
+            <h2>Access Restricted &bull; Store Admin Only</h2>
+            <p>Store profile configuration, tax settings, staff accounts, and role permissions are restricted to the Main Administrator.</p>
+            <div class="admin-unlock-box">
+              <div class="current-role-info">Active Account: <strong id="settings-denied-user-name">Grace Natukunda</strong> <span class="role-badge cashier" id="settings-denied-role-badge">CASHIER</span></div>
+              <button class="btn btn-primary mt-3" id="btn-settings-switch-admin">
+                <i data-lucide="key-round"></i> Switch / Log in as Main Admin
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-container" id="settings-admin-content">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">System Settings & Staff Role Management</h2>
+              <p class="section-desc">Manage staff accounts, assign worker roles, configure store profile, and database backups.</p>
+            </div>
+            <div class="header-btns">
+              <button class="btn btn-primary" id="btn-add-staff-modal">
+                <i data-lucide="user-plus"></i> Add New Staff Member
+              </button>
+            </div>
+          </div>
+
+          <!-- Staff Role Management Card -->
+          <div class="data-table-card mb-6" style="margin-bottom: 1.5rem;">
+            <div class="card-table-header">
+              <div>
+                <h3 class="card-title" style="margin-bottom: 2px;"><i data-lucide="shield-check" class="text-emerald"></i> Staff Accounts & Role-Based Access Control (RBAC)</h3>
+                <p class="text-muted small">Only Main Admins can see business cash reports, drawer balances, and profit margins. Cashiers/Workers have restricted operational views.</p>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="custom-table" id="staff-table">
+                <thead>
+                  <tr>
+                    <th>Staff Name & Username</th>
+                    <th>Assigned Role</th>
+                    <th>Cash Reports Access</th>
+                    <th>Profit & Margin Access</th>
+                    <th>Login PIN</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="staff-table-body">
+                  <!-- Populated via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <!-- Business Info Form -->
+            <div class="settings-card">
+              <h3 class="card-title"><i data-lucide="store"></i> Business Profile</h3>
+              <form id="store-settings-form">
+                <div class="form-group">
+                  <label>Business Name</label>
+                  <input type="text" id="setting-store-name" class="form-input" value="BAKYENGA TRADERS" />
+                </div>
+                <div class="form-group">
+                  <label>Tagline / Motto</label>
+                  <input type="text" id="setting-store-tagline" class="form-input" value="Wholesale & Retail General Merchants" />
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Store Telephone</label>
+                    <input type="text" id="setting-store-phone" class="form-input" value="+256 701 456 789 / +256 772 123 456" />
+                  </div>
+                  <div class="form-group">
+                    <label>TIN / Tax Identification No.</label>
+                    <input type="text" id="setting-store-tin" class="form-input" value="1008492019" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Physical Address</label>
+                  <input type="text" id="setting-store-address" class="form-input" value="Plot 14, Commercial Plaza, High Street, Kampala, Uganda" />
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Currency Code</label>
+                    <select id="setting-currency" class="form-select">
+                      <option value="UGX" selected>UGX - Ugandan Shillings</option>
+                      <option value="USD">USD - US Dollar ($)</option>
+                      <option value="KES">KES - Kenyan Shilling</option>
+                      <option value="EUR">EUR - Euro (€)</option>
+                      <option value="GBP">GBP - British Pound (£)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Default Tax Rate (%)</label>
+                    <input type="number" id="setting-tax-rate" class="form-input" value="18" min="0" max="100" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Receipt Footer Message</label>
+                  <textarea id="setting-receipt-footer" class="form-input" rows="2">Thank you for trading with Bakyenga Traders! Goods once sold are not returnable without original receipt.</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                  <i data-lucide="save"></i> Save Settings
+                </button>
+              </form>
+            </div>
+
+            <!-- Database & System Backups -->
+            <div class="settings-card">
+              <h3 class="card-title"><i data-lucide="database"></i> Data Backup & Persistence</h3>
+              <p class="text-muted">All products, sales transactions, customers, and shift records are stored locally in your browser storage.</p>
+              
+              <div class="backup-actions-box">
+                <div class="backup-item">
+                  <div>
+                    <strong>Export Full Backup (JSON)</strong>
+                    <p class="small text-muted">Download entire database to protect your sales and inventory records.</p>
+                  </div>
+                  <button class="btn btn-secondary" id="btn-export-backup">
+                    <i data-lucide="download"></i> Download Backup
+                  </button>
+                </div>
+
+                <div class="backup-item">
+                  <div>
+                    <strong>Restore from Backup File</strong>
+                    <p class="small text-muted">Upload a previously exported JSON backup file.</p>
+                  </div>
+                  <label class="btn btn-secondary btn-file-label">
+                    <i data-lucide="upload"></i> Restore File
+                    <input type="file" id="restore-file-input" accept=".json" style="display: none;" />
+                  </label>
+                </div>
+
+                <div class="backup-item danger-zone">
+                  <div>
+                    <strong class="text-ruby">Reset to Sample Demo Catalog</strong>
+                    <p class="small text-muted">Re-populate with realistic Bakyenga Traders inventory, products, and sample customers.</p>
+                  </div>
+                  <button class="btn btn-danger btn-sm" id="btn-reset-demo-data">
+                    <i data-lucide="refresh-cw"></i> Reset Demo Data
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- =============================================
+       SYSTEM AUTHENTICATION LOCKSCREEN
+       ============================================= -->
+  <div class="lockscreen-overlay" id="lockscreen-overlay">
+    <div class="lockscreen-wrap">
+      <div class="lock-orb lock-orb-1"></div>
+      <div class="lock-orb lock-orb-2"></div>
+      <div class="lock-orb lock-orb-3"></div>
+      <div class="lock-brand">
+        <img src="logo.jpg" alt="Bakyenga Traders" class="lock-logo" onerror="this.style.display='none'; document.getElementById('lock-logo-fb').style.display='flex';" />
+        <div class="lock-logo-fallback" id="lock-logo-fb" style="display:none;">BT</div>
+        <h1 class="lock-title">BAKYENGA TRADERS</h1>
+        <p class="lock-subtitle">Secure POS &bull; Select Your Profile to Sign In</p>
+      </div>
+      <div class="lock-time-wrap">
+        <div class="lock-time" id="lock-clock">10:00 AM</div>
+        <div class="lock-date" id="lock-date">Friday, 02 Oct 2026</div>
+      </div>
+      <div class="lock-profiles" id="lock-profiles-grid"></div>
+      <div class="lock-pin-section" id="lock-pin-section" style="display:none;">
+        <div class="lock-pin-user">
+          <div class="user-avatar lock-pin-avatar" id="lock-pin-avatar">BB</div>
+          <div>
+            <div class="lock-pin-name" id="lock-pin-name">Brian Bakyenga</div>
+            <div id="lock-pin-role-badge"><span class="role-badge admin">ADMIN</span></div>
+          </div>
+          <button class="btn btn-ghost btn-xs" id="lock-back-to-profiles" style="margin-left:auto;">&#8592; Change</button>
+        </div>
+        <div class="pin-dots-container lock-pin-dots" id="lock-pin-dots">
+          <span class="pin-dot"></span><span class="pin-dot"></span>
+          <span class="pin-dot"></span><span class="pin-dot"></span>
+        </div>
+        <div class="pin-error-msg" id="lock-pin-error" style="display:none;">Incorrect PIN &mdash; please try again</div>
+        <div class="touch-numpad lock-numpad">
+          <button type="button" class="numpad-btn" data-lnum="1">1</button>
+          <button type="button" class="numpad-btn" data-lnum="2">2</button>
+          <button type="button" class="numpad-btn" data-lnum="3">3</button>
+          <button type="button" class="numpad-btn" data-lnum="4">4</button>
+          <button type="button" class="numpad-btn" data-lnum="5">5</button>
+          <button type="button" class="numpad-btn" data-lnum="6">6</button>
+          <button type="button" class="numpad-btn" data-lnum="7">7</button>
+          <button type="button" class="numpad-btn" data-lnum="8">8</button>
+          <button type="button" class="numpad-btn" data-lnum="9">9</button>
+          <button type="button" class="numpad-btn lock-numpad-clear">C</button>
+          <button type="button" class="numpad-btn" data-lnum="0">0</button>
+          <button type="button" class="numpad-btn lock-numpad-back">&larr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODALS -->
+  <!-- ============================================== -->
+
+  <!-- 1. CHECKOUT PAYMENT MODAL (REDESIGNED) -->
+  <div class="modal-overlay" id="payment-modal">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i data-lucide="wallet" class="text-emerald"></i>
+          <div>
+            <h3 class="modal-title">Checkout & Payment</h3>
+            <span class="modal-sub" id="pay-modal-customer">Customer: Walk-in Customer</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" data-close="payment-modal">&times;</button>
+      </div>
+
+      <div class="modal-body payment-body">
+        
+        <!-- Big Total Due Display -->
+        <div class="payment-amount-hero">
+          <span class="hero-label">NET AMOUNT PAYABLE</span>
+          <h1 class="hero-amount text-emerald" id="pay-total-due">UGX 0</h1>
+          <span class="hero-item-count" id="pay-item-summary">0 items in ticket</span>
+        </div>
+
+        <!-- Payment Method Selector Tabs -->
+        <div class="payment-methods-grid">
+          <button class="pay-method-btn active" data-method="CASH">
+            <i data-lucide="banknote"></i>
+            <span>Cash</span>
+          </button>
+          <button class="pay-method-btn" data-method="MTN_MOMO">
+            <i data-lucide="smartphone" class="text-amber"></i>
+            <span>MTN MoMo</span>
+          </button>
+          <button class="pay-method-btn" data-method="AIRTEL_MONEY">
+            <i data-lucide="phone-call" class="text-ruby"></i>
+            <span>Airtel Money</span>
+          </button>
+          <button class="pay-method-btn" data-method="CARD">
+            <i data-lucide="credit-card" class="text-sapphire"></i>
+            <span>Visa / Card</span>
+          </button>
+          <button class="pay-method-btn" data-method="CREDIT">
+            <i data-lucide="file-text"></i>
+            <span>Store Credit</span>
+          </button>
+        </div>
+
+        <!-- Dynamic Tender Fields based on method -->
+        <div class="payment-detail-panels">
+          
+          <!-- CASH PANEL -->
+          <div class="pay-panel active" id="panel-cash">
+            <div class="tender-group">
+              <label>Amount Tendered by Customer</label>
+              <div class="tender-input-wrap">
+                <span class="curr-prefix">UGX</span>
+                <input type="number" id="cash-tendered-input" class="tender-input" placeholder="0" min="0" autofocus />
+              </div>
+            </div>
+
+            <div class="quick-tender-chips" id="modal-quick-tender">
+              <!-- Exact and denomination chips injected dynamically -->
+            </div>
+
+            <div class="change-display-box" id="change-box">
+              <span class="change-label">Change Due to Customer:</span>
+              <span class="change-val" id="cash-change-val">UGX 0</span>
+            </div>
+          </div>
+
+          <!-- MTN MOMO PANEL -->
+          <div class="pay-panel" id="panel-mtn-momo">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Customer Mobile No. (e.g. 0772 / 0782...)</label>
+                <input type="text" id="mtn-phone-input" class="form-input" placeholder="0770 000 000" />
+              </div>
+              <div class="form-group">
+                <label>MoMo Transaction ID / Reference</label>
+                <input type="text" id="mtn-ref-input" class="form-input" placeholder="e.g. MP261002.0911.B821" />
+              </div>
+            </div>
+            <div class="channel-notice">
+              <i data-lucide="info"></i>
+              <span>Customer will prompt approval on their handset or confirm SMS transaction ID above.</span>
+            </div>
+          </div>
+
+          <!-- AIRTEL MONEY PANEL -->
+          <div class="pay-panel" id="panel-airtel-money">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Airtel Mobile No. (e.g. 0701 / 0752...)</label>
+                <input type="text" id="airtel-phone-input" class="form-input" placeholder="0700 000 000" />
+              </div>
+              <div class="form-group">
+                <label>Airtel Money Transaction ID / Ref</label>
+                <input type="text" id="airtel-ref-input" class="form-input" placeholder="e.g. AM261002.A912" />
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD / POS TERMINAL PANEL -->
+          <div class="pay-panel" id="panel-card">
+            <div class="form-row">
+              <div class="form-group">
+                <label>POS Card Terminal Approval Code / RRN</label>
+                <input type="text" id="card-ref-input" class="form-input" placeholder="e.g. 849201" />
+              </div>
+              <div class="form-group">
+                <label>Card Type</label>
+                <select id="card-type-select" class="form-select">
+                  <option value="Visa">Visa Debit/Credit</option>
+                  <option value="Mastercard">Mastercard</option>
+                  <option value="UnionPay">UnionPay</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- STORE CREDIT / DEBTOR PANEL -->
+          <div class="pay-panel" id="panel-credit">
+            <div class="credit-warning" id="credit-warning-box">
+              <i data-lucide="alert-circle"></i>
+              <div id="credit-cust-status">
+                Please select a registered customer to bill on credit.
+              </div>
+            </div>
+            <div class="form-group mt-3">
+              <label>Credit Terms / Note (Due date or guarantor)</label>
+              <input type="text" id="credit-notes-input" class="form-input" placeholder="e.g. To pay within 14 days" />
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close="payment-modal">Cancel (Esc)</button>
+        <button class="btn btn-primary btn-lg" id="btn-complete-sale">
+          <i data-lucide="check-circle-2"></i>
+          <span>COMPLETE TRANSACTION & RECEIPT</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. THERMAL RECEIPT MODAL (PRINT & PREVIEW) -->
+  <div class="modal-overlay" id="receipt-modal">
+    <div class="modal-card modal-receipt-wrap">
+      <div class="modal-header no-print">
+        <div class="modal-title-wrap">
+          <i data-lucide="check-circle" class="text-emerald"></i>
+          <div>
+            <h3 class="modal-title">Transaction Successful</h3>
+            <span class="modal-sub">Official receipt issued</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" data-close="receipt-modal">&times;</button>
+      </div>
+
+      <div class="modal-body receipt-modal-body">
+        
+        <!-- Physical Thermal Receipt Area (Styled for 80mm printer) -->
+        <div class="thermal-receipt" id="printable-receipt">
+          <div class="receipt-header">
+            <img src="logo.jpg" alt="Bakyenga Traders" class="receipt-logo" onerror="this.style.display='none';" />
+            <h2 class="receipt-store-name">BAKYENGA TRADERS</h2>
+            <p class="receipt-tagline">Wholesale & Retail General Merchants</p>
+            <p class="receipt-info">Plot 14, Commercial Plaza, High Street</p>
+            <p class="receipt-info">Kampala, Uganda &bull; Tel: +256 701 456 789</p>
+            <p class="receipt-tin">TIN: 1008492019 &bull; TAX INVOICE</p>
+          </div>
+
+          <div class="receipt-divider">================================</div>
+
+          <div class="receipt-meta">
+            <div><span>Receipt #:</span> <strong id="rec-number">BK-20261002-001</strong></div>
+            <div><span>Date:</span> <span id="rec-date">02/10/2026 10:14 AM</span></div>
+            <div><span>Cashier:</span> <span id="rec-cashier">Brian Bakyenga</span></div>
+            <div><span>Customer:</span> <span id="rec-customer">Walk-in Customer</span></div>
+          </div>
+
+          <div class="receipt-divider">--------------------------------</div>
+
+          <table class="receipt-items-table">
+            <thead>
+              <tr>
+                <th class="th-item-name">ITEM</th>
+                <th class="th-item-qty">QTY</th>
+                <th class="th-item-price">PRICE</th>
+                <th class="th-item-amt">TOTAL</th>
+              </tr>
+            </thead>
+            <tbody id="rec-items-body">
+              <!-- Line items -->
+            </tbody>
+          </table>
+
+          <div class="receipt-divider">--------------------------------</div>
+
+          <div class="receipt-totals-table">
+            <div class="rec-row">
+              <span>Subtotal:</span>
+              <span id="rec-subtotal">UGX 0</span>
+            </div>
+            <div class="rec-row" id="rec-discount-row" style="display: none;">
+              <span>Discount:</span>
+              <span id="rec-discount">- UGX 0</span>
+            </div>
+            <div class="rec-row" id="rec-tax-row" style="display: none;">
+              <span>VAT (18%):</span>
+              <span id="rec-tax">UGX 0</span>
+            </div>
+            <div class="rec-row grand-total-rec">
+              <strong>TOTAL PAYABLE:</strong>
+              <strong id="rec-grand-total">UGX 0</strong>
+            </div>
+            <div class="receipt-divider">--------------------------------</div>
+            <div class="rec-row">
+              <span>Payment Mode:</span>
+              <strong id="rec-pay-mode">CASH</strong>
+            </div>
+            <div class="rec-row" id="rec-tendered-row">
+              <span>Amount Paid:</span>
+              <span id="rec-tendered">UGX 0</span>
+            </div>
+            <div class="rec-row" id="rec-change-row">
+              <span>Change Returned:</span>
+              <strong id="rec-change">UGX 0</strong>
+            </div>
+          </div>
+
+          <div class="receipt-divider">================================</div>
+
+          <div class="receipt-barcode-zone">
+            <!-- Simulated Code 128 barcode -->
+            <div class="barcode-lines" id="rec-barcode-graphic"></div>
+            <span class="barcode-text" id="rec-barcode-val">*BK20261002001*</span>
+          </div>
+
+          <div class="receipt-footer">
+            <p id="rec-footer-text">Thank you for trading with Bakyenga Traders!</p>
+            <p class="receipt-sub-footer">Quality Goods &bull; Reliable Service</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer no-print">
+        <button class="btn btn-secondary" data-close="receipt-modal">
+          <i data-lucide="plus"></i> New Sale
+        </button>
+        <button class="btn btn-primary" id="btn-print-receipt">
+          <i data-lucide="printer"></i> Print Receipt
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. ADD / EDIT PRODUCT MODAL -->
+  <div class="modal-overlay" id="product-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="product-modal-title">Add New Product</h3>
+        <button class="modal-close-btn" data-close="product-modal">&times;</button>
+      </div>
+      <form id="product-form">
+        <input type="hidden" id="prod-id" />
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Product Name *</label>
+            <input type="text" id="prod-name" class="form-input" required placeholder="e.g. Super Basmati Rice 25kg" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Barcode / SKU *</label>
+              <div class="input-with-action">
+                <input type="text" id="prod-barcode" class="form-input" required placeholder="e.g. 6001001" />
+                <button type="button" class="btn btn-ghost btn-sm" id="btn-gen-barcode" title="Generate Random Barcode">
+                  <i data-lucide="wand-2"></i>
+                </button>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="label-with-action">
+                <label>Category *</label>
+                <button type="button" class="btn-link-action" id="btn-toggle-custom-cat" title="Create your own category">
+                  <i data-lucide="plus-circle" style="width:13px; height:13px;"></i> + Custom Category
+                </button>
+              </div>
+              <div id="cat-select-wrapper">
+                <select id="prod-category" class="form-select" required>
+                  <!-- Dynamically populated from AppState.categories -->
+                </select>
+              </div>
+              <div id="custom-cat-wrapper" style="display: none; margin-top: 6px;">
+                <div class="input-with-action">
+                  <input type="text" id="custom-cat-input" class="form-input" placeholder="Type new category (e.g. Electricals, Dairy, Bakery...)" />
+                  <button type="button" class="btn btn-primary btn-sm" id="btn-apply-custom-cat">Add & Select</button>
+                  <button type="button" class="btn btn-secondary btn-sm" id="btn-cancel-custom-cat" title="Cancel">&times;</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Cost Price (UGX) *</label>
+              <input type="number" id="prod-cost" class="form-input" min="0" required placeholder="Buying cost" />
+            </div>
+            <div class="form-group">
+              <label>Selling Price (UGX) *</label>
+              <input type="number" id="prod-price" class="form-input" min="0" required placeholder="Retail price" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Initial Stock Quantity *</label>
+              <input type="number" id="prod-stock" class="form-input" min="0" required placeholder="e.g. 50" />
+            </div>
+            <div class="form-group">
+              <label>Low Stock Alert Level *</label>
+              <input type="number" id="prod-min-stock" class="form-input" min="1" required value="10" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Measurement Unit</label>
+            <select id="prod-unit" class="form-select">
+              <option value="pcs">Pieces (pcs)</option>
+              <option value="kg">Kilograms (kg)</option>
+              <option value="bags">Bags (bags)</option>
+              <option value="cartons">Cartons (ctn)</option>
+              <option value="litres">Litres (L)</option>
+              <option value="packets">Packets (pkt)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="product-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-product">
+            <i data-lucide="check"></i> Save Product
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. QUICK STOCK ADJUST MODAL -->
+  <div class="modal-overlay" id="stock-adjust-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Adjust Stock Level</h3>
+        <button class="modal-close-btn" data-close="stock-adjust-modal">&times;</button>
+      </div>
+      <form id="stock-adjust-form">
+        <input type="hidden" id="adjust-prod-id" />
+        <div class="modal-body">
+          <p class="adjust-prod-name" id="adjust-prod-title">Product Name</p>
+          <p class="adjust-curr-stock">Current Stock: <strong id="adjust-current-stock-val">0</strong></p>
+
+          <div class="form-row mt-4">
+            <div class="form-group">
+              <label>Adjustment Type</label>
+              <select id="adjust-type" class="form-select">
+                <option value="ADD">Restock (+) New Supply Received</option>
+                <option value="REMOVE">Remove (-) Damage / Expired / Loss</option>
+                <option value="SET">Direct Set (=) Physical Stock Count</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Quantity</label>
+              <input type="number" id="adjust-qty" class="form-input" min="1" required value="1" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Reason / Reference Note</label>
+            <input type="text" id="adjust-reason" class="form-input" placeholder="e.g. Invoice #PO-902 or Damaged goods" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="stock-adjust-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Stock</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. ADD CUSTOMER MODAL -->
+  <div class="modal-overlay" id="customer-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Register New Customer</h3>
+        <button class="modal-close-btn" data-close="customer-modal">&times;</button>
+      </div>
+      <form id="customer-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Customer / Enterprise Name *</label>
+            <input type="text" id="cust-name" class="form-input" required placeholder="e.g. Hajji Juma Retailers" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Telephone *</label>
+              <input type="text" id="cust-phone" class="form-input" required placeholder="e.g. 0772 345 678" />
+            </div>
+            <div class="form-group">
+              <label>Credit Limit (UGX)</label>
+              <input type="number" id="cust-credit-limit" class="form-input" value="500000" min="0" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Physical Address / Location</label>
+            <input type="text" id="cust-address" class="form-input" placeholder="e.g. Nakasero Market, Shop 42" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="customer-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="user-plus"></i> Save Customer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6. RECORD DEBT REPAYMENT MODAL -->
+  <div class="modal-overlay" id="repay-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Record Debt Repayment</h3>
+        <button class="modal-close-btn" data-close="repay-modal">&times;</button>
+      </div>
+      <form id="repay-form">
+        <input type="hidden" id="repay-cust-id" />
+        <div class="modal-body">
+          <div class="repay-cust-banner">
+            <span class="banner-label">Customer:</span>
+            <strong id="repay-cust-name">Hajji Juma</strong>
+            <div class="mt-1">
+              <span>Outstanding Debt:</span>
+              <strong class="text-ruby font-mono" id="repay-current-debt">UGX 0</strong>
+            </div>
+          </div>
+
+          <div class="form-group mt-4">
+            <label>Payment Amount Received (UGX) *</label>
+            <input type="number" id="repay-amount" class="form-input font-mono" required min="1" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Payment Method</label>
+              <select id="repay-method" class="form-select">
+                <option value="CASH">Cash</option>
+                <option value="MTN_MOMO">MTN Mobile Money</option>
+                <option value="AIRTEL_MONEY">Airtel Money</option>
+                <option value="BANK">Bank Deposit</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Receipt / Reference Ref</label>
+              <input type="text" id="repay-ref" class="form-input" placeholder="Optional reference" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="repay-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="check"></i> Confirm Payment Received
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. CASH MOVEMENT (IN/OUT) MODAL -->
+  <div class="modal-overlay" id="cash-movement-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Cash Movement (Float / Payout)</h3>
+        <button class="modal-close-btn" data-close="cash-movement-modal">&times;</button>
+      </div>
+      <form id="cash-movement-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Movement Type</label>
+            <select id="movement-type" class="form-select">
+              <option value="CASH_IN">Cash In (Float Addition / Capital)</option>
+              <option value="CASH_OUT">Cash Out (Expense / Lunch / Supplies / Transport)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Amount (UGX) *</label>
+            <input type="number" id="movement-amount" class="form-input font-mono" min="500" required placeholder="e.g. 20000" />
+          </div>
+          <div class="form-group">
+            <label>Reason / Description *</label>
+            <input type="text" id="movement-reason" class="form-input" required placeholder="e.g. Staff Lunch, Store Cleaning Supplies, Transport" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="cash-movement-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Record Cash Movement</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 8. CLOSE SHIFT & Z-REPORT MODAL -->
+  <div class="modal-overlay" id="close-shift-modal">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title">End of Day Shift Reconciliation & Z-Report</h3>
+        <button class="modal-close-btn" data-close="close-shift-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="z-report-card">
+          <div class="z-header">
+            <h4>BAKYENGA TRADERS &bull; END OF DAY Z-REPORT</h4>
+            <span id="z-report-time">Generated on 02/10/2026</span>
+          </div>
+
+          <div class="z-grid">
+            <div class="z-stat-box">
+              <span class="z-lbl">Opening Drawer Float</span>
+              <strong class="z-val font-mono" id="z-float-val">UGX 150,000</strong>
+            </div>
+            <div class="z-stat-box">
+              <span class="z-lbl">Cash Sales Collected</span>
+              <strong class="z-val font-mono text-emerald" id="z-cash-sales-val">UGX 0</strong>
+            </div>
+            <div class="z-stat-box">
+              <span class="z-lbl">Petty Cash In (+) / Out (-)</span>
+              <strong class="z-val font-mono" id="z-petty-net-val">UGX 0</strong>
+            </div>
+            <div class="z-stat-box highlight">
+              <span class="z-lbl">EXPECTED CASH IN DRAWER</span>
+              <strong class="z-val font-mono text-sapphire" id="z-expected-cash-val">UGX 150,000</strong>
+            </div>
+          </div>
+
+          <div class="cash-count-entry mt-5">
+            <label><strong>Actual Physical Cash Counted in Drawer (UGX) *</strong></label>
+            <input type="number" id="z-counted-cash-input" class="form-input font-mono z-count-input" placeholder="Enter counted amount..." />
+            <div class="discrepancy-row mt-2" id="z-discrepancy-row">
+              <span>Variance / Discrepancy:</span>
+              <strong id="z-discrepancy-val">UGX 0 (Balanced)</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close="close-shift-modal">Cancel</button>
+        <button class="btn btn-primary" id="btn-print-z-report">
+          <i data-lucide="printer"></i> Print Shift Z-Report
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. KEYBOARD SHORTCUTS GUIDE MODAL -->
+  <div class="modal-overlay" id="shortcuts-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title"><i data-lucide="keyboard"></i> Keyboard Shortcuts</h3>
+        <button class="modal-close-btn" data-close="shortcuts-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="shortcuts-table">
+          <div class="shortcut-row"><kbd>F1</kbd> <span>Focus Barcode / Product Search Bar</span></div>
+          <div class="shortcut-row"><kbd>F2</kbd> <span>Hold / Park Current Cart (New Ticket)</span></div>
+          <div class="shortcut-row"><kbd>F4</kbd> <span>Open Payment / Checkout Modal</span></div>
+          <div class="shortcut-row"><kbd>F9</kbd> <span>Add Quick Custom Item</span></div>
+          <div class="shortcut-row"><kbd>Esc</kbd> <span>Close Any Open Modal or Clear Selection</span></div>
+          <div class="shortcut-row"><kbd>Enter</kbd> <span>In Search Bar: Auto-add first matching product / scanned barcode</span></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close="shortcuts-modal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. USER SWITCHER & LOGIN MODAL -->
+  <div class="modal-overlay" id="user-modal">
+    <div class="modal-card modal-login-wrap">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i data-lucide="users" class="text-sapphire"></i>
+          <div>
+            <h3 class="modal-title">Switch User / Staff Login</h3>
+            <span class="modal-sub">Select profile and enter security PIN</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" data-close="user-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- Staff Picker Grid -->
+        <div class="staff-picker-grid" id="staff-picker-grid">
+          <!-- Populated dynamically via JavaScript -->
+        </div>
+
+        <!-- PIN Entry Section -->
+        <div class="pin-entry-section" id="pin-entry-section" style="display: none;">
+          <div class="selected-staff-banner">
+            <div class="user-avatar" id="login-selected-avatar">BB</div>
+            <div style="flex: 1;">
+              <strong id="login-selected-name" style="color: #fff; font-size: 0.95rem;">Brian Bakyenga</strong>
+              <div id="login-selected-role-tag">
+                <span class="role-badge admin">ADMIN</span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-ghost btn-xs" id="btn-back-to-picker">Change</button>
+          </div>
+
+          <div class="pin-display-wrap mt-3">
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Enter 4-Digit Security PIN:</label>
+            <div class="pin-dots-container" id="pin-dots-row">
+              <span class="pin-dot"></span>
+              <span class="pin-dot"></span>
+              <span class="pin-dot"></span>
+              <span class="pin-dot"></span>
+            </div>
+            <input type="password" id="staff-pin-input" maxlength="6" class="pin-display-input" placeholder="Enter PIN" autocomplete="off" />
+            <div class="pin-error-msg" id="pin-error-msg" style="display: none;">Incorrect PIN! Please try again.</div>
+          </div>
+
+          <!-- Touch Numpad -->
+          <div class="touch-numpad mt-3">
+            <button type="button" class="numpad-btn" data-num="1">1</button>
+            <button type="button" class="numpad-btn" data-num="2">2</button>
+            <button type="button" class="numpad-btn" data-num="3">3</button>
+            <button type="button" class="numpad-btn" data-num="4">4</button>
+            <button type="button" class="numpad-btn" data-num="5">5</button>
+            <button type="button" class="numpad-btn" data-num="6">6</button>
+            <button type="button" class="numpad-btn" data-num="7">7</button>
+            <button type="button" class="numpad-btn" data-num="8">8</button>
+            <button type="button" class="numpad-btn" data-num="9">9</button>
+            <button type="button" class="numpad-btn numpad-clear" id="btn-numpad-clear">C</button>
+            <button type="button" class="numpad-btn" data-num="0">0</button>
+            <button type="button" class="numpad-btn numpad-back" id="btn-numpad-back">&larr;</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-close="user-modal">Cancel</button>
+        <button class="btn btn-primary" id="btn-confirm-login" style="display: none;">
+          <i data-lucide="log-in"></i> Sign In
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. ADD / EDIT STAFF MEMBER MODAL -->
+  <div class="modal-overlay" id="staff-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="staff-modal-title">Add New Staff Member</h3>
+        <button class="modal-close-btn" data-close="staff-modal">&times;</button>
+      </div>
+      <form id="staff-form">
+        <input type="hidden" id="staff-edit-id" />
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="staff-name-input" class="form-input" required placeholder="e.g. Grace Natukunda" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Username / Handle *</label>
+              <input type="text" id="staff-username-input" class="form-input" required placeholder="e.g. grace" />
+            </div>
+            <div class="form-group">
+              <label>Assigned Role *</label>
+              <select id="staff-role-select" class="form-select" required>
+                <option value="CASHIER">Cashier / Worker (Restricted from Cash Reports)</option>
+                <option value="ADMIN">Main Admin (Full Business Financial Access)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>4-Digit Security PIN *</label>
+              <input type="password" id="staff-pin-setting" class="form-input font-mono" maxlength="6" required placeholder="e.g. 2222" />
+            </div>
+            <div class="form-group">
+              <label>Phone / Contact</label>
+              <input type="text" id="staff-phone-input" class="form-input" placeholder="e.g. 0701 234 567" />
+            </div>
+          </div>
+          <div class="role-desc-box mt-3" id="role-permissions-preview">
+            <i data-lucide="shield-alert" class="text-amber"></i>
+            <span id="role-desc-text">Cashiers/Workers can operate the register and make sales, but CANNOT see business revenue, profit margins, shift drawer balances, or financial reports.</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="staff-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-staff">
+            <i data-lucide="check"></i> Save Staff Member
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 12. QUICK ADD CATEGORY MODAL -->
+  <div class="modal-overlay" id="category-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Create Custom Product Category</h3>
+        <button class="modal-close-btn" data-close="category-modal">&times;</button>
+      </div>
+      <form id="quick-category-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Category Name *</label>
+            <input type="text" id="quick-cat-name-input" class="form-input" required placeholder="e.g. Dairy & Frozen Foods, Electricals, Bakery, Automotive..." />
+          </div>
+          <p class="small text-muted">This custom category will be immediately available in the POS register filter tabs, catalog dropdowns, and inventory management.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="category-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i data-lucide="folder-plus"></i> Save Category
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Application Script -->
+  <script src="app.js"></script>
+</body>
+</html>
