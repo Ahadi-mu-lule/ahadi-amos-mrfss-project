@@ -3,19 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bakyenga POS | SaaS Login</title>
+  <title>Bakyenga POS | Business Login & Registration</title>
   <style>
     :root {
       --bg: #07111d;
       --card: rgba(15, 26, 44, 0.96);
-      --card-alt: #101d30;
       --primary: #3b82f6;
       --primary-2: #1d4ed8;
       --text: #e2e8f0;
       --muted: #94a3b8;
       --line: rgba(148, 163, 184, 0.22);
-      --danger: #ef4444;
       --success: #10b981;
+      --danger: #ef4444;
     }
 
     * { box-sizing: border-box; }
@@ -30,13 +29,21 @@
       color: var(--text);
     }
 
+    .auth-container {
+      display: flex;
+      gap: 1.5rem;
+      width: min(900px, 95vw);
+      flex-wrap: wrap;
+    }
+
     .auth-shell {
-      width: min(420px, 92vw);
+      flex: 1;
+      min-width: 380px;
       border: 1px solid var(--line);
       border-radius: 22px;
       background: var(--card);
       box-shadow: 0 25px 60px rgba(2, 6, 23, 0.7);
-      padding: 28px 26px 22px;
+      padding: 28px 26px;
     }
 
     .brand {
@@ -68,41 +75,60 @@
       font-size: 0.92rem;
     }
 
+    .section-label {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .form-section {
+      display: none;
+    }
+
+    .form-section.active {
+      display: block;
+    }
+
     form {
-      margin-top: 20px;
+      margin-top: 0;
     }
 
     label {
       display: block;
-      margin: 12px 0 8px;
+      margin: 12px 0 6px;
       color: var(--muted);
       font-size: 0.85rem;
+      font-weight: 500;
     }
 
-    input {
+    input, select {
       width: 100%;
       border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 8px;
       background: rgba(15, 26, 44, 0.9);
       color: var(--text);
-      padding: 14px 14px;
-      font-size: 1rem;
+      padding: 10px 12px;
+      font-size: 0.95rem;
       outline: none;
+      margin-bottom: 10px;
     }
 
-    input:focus {
+    input:focus, select:focus {
       border-color: rgba(59, 130, 246, 0.75);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
     }
 
     button {
       width: 100%;
-      margin-top: 18px;
+      margin-top: 16px;
       border: none;
-      border-radius: 12px;
+      border-radius: 8px;
       background: linear-gradient(135deg, var(--primary), var(--primary-2));
       color: white;
-      padding: 14px 16px;
+      padding: 12px 16px;
       font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
@@ -112,56 +138,239 @@
       filter: brightness(1.05);
     }
 
-    .demo-box {
-      margin-top: 20px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(17, 24, 39, 0.9);
-      padding: 12px 14px;
-      color: var(--muted);
-      line-height: 1.8;
-      font-size: 0.83rem;
+    .toggle-link {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 0.85rem;
     }
 
-    .demo-box strong {
-      color: var(--text);
+    .toggle-link a {
+      color: var(--primary);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .info-box {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--muted);
+      font-size: 0.8rem;
+      line-height: 1.5;
     }
 
     .error {
-      min-height: 20px;
-      margin-top: 12px;
       color: #fca5a5;
       font-size: 0.85rem;
+      margin-top: 8px;
+    }
+
+    .success {
+      color: #86efac;
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+
+    .dev-link {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      font-size: 0.85rem;
+    }
+
+    .dev-link a {
+      color: var(--primary);
+      cursor: pointer;
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div class="auth-shell">
-    <div class="brand">
-      <div class="brand-badge">BT</div>
-      <h1>BAKYENGA POS</h1>
-      <p class="subtitle">Wholesale & Retail SaaS Login</p>
+  <div class="auth-container">
+    <!-- BUSINESS LOGIN & REGISTRATION -->
+    <div class="auth-shell">
+      <div class="brand">
+        <div class="brand-badge">BT</div>
+        <h1>BAKYENGA POS</h1>
+        <p class="subtitle">Business Portal</p>
+      </div>
+
+      <!-- BUSINESS LOGIN -->
+      <div id="businessLoginSection" class="form-section active">
+        <div class="section-label">Business Owner Login</div>
+        <form id="businessLoginForm">
+          <label for="bizEmail">Username</label>
+          <input id="bizEmail" type="text" placeholder="admin" required />
+
+          <label for="bizPassword">Password</label>
+          <input id="bizPassword" type="password" placeholder="••••••••" required />
+
+          <button type="submit">Login</button>
+          <div class="error" id="bizLoginError"></div>
+        </form>
+
+        <div class="toggle-link">
+          New business? <a onclick="toggleSection('businessRegisterSection')">Register here</a>
+        </div>
+
+        <div class="info-box">
+          <strong>Demo Credentials:</strong><br />
+          admin / admin123<br />
+          tom / tom123
+        </div>
+
+        <div class="dev-link">
+          <a onclick="toggleSection('devLoginSection')">Developer Admin Panel →</a>
+        </div>
+      </div>
+
+      <!-- BUSINESS REGISTRATION -->
+      <div id="businessRegisterSection" class="form-section">
+        <div class="section-label">Register Your Business</div>
+        <form id="businessRegistrationForm">
+          <label>Business Name</label>
+          <input id="regBizName" type="text" placeholder="Your Business Name" required />
+
+          <label>Location</label>
+          <input id="regLocation" type="text" placeholder="City / Address" required />
+
+          <label>Business Email</label>
+          <input id="regBizEmail" type="email" placeholder="business@example.com" required />
+
+          <label>Phone</label>
+          <input id="regPhone" type="tel" placeholder="+256 7xx xxx xxx" required />
+
+          <label>Admin Full Name</label>
+          <input id="regAdminName" type="text" placeholder="Your Full Name" required />
+
+          <label>Admin Username</label>
+          <input id="regAdminUsername" type="text" placeholder="admin" required />
+
+          <label>Admin Password</label>
+          <input id="regAdminPassword" type="password" placeholder="••••••••" required />
+
+          <button type="submit">Submit Registration</button>
+          <div class="error" id="regError"></div>
+          <div class="success" id="regSuccess"></div>
+        </form>
+
+        <div class="toggle-link">
+          Already registered? <a onclick="toggleSection('businessLoginSection')">Login here</a>
+        </div>
+      </div>
     </div>
 
-    <form id="loginForm">
-      <label for="email">Username or Email</label>
-      <input id="email" type="text" placeholder="admin or admin@bakyenga.com" required />
+    <!-- DEVELOPER ADMIN PANEL -->
+    <div class="auth-shell">
+      <div class="brand">
+        <div class="brand-badge">DEV</div>
+        <h1>Developer Admin</h1>
+        <p class="subtitle">System Control Panel</p>
+      </div>
 
-      <label for="password">Password</label>
-      <input id="password" type="password" placeholder="••••••••" required />
+      <div id="devLoginSection" class="form-section active">
+        <div class="section-label">Developer Login</div>
+        <form id="devLoginForm">
+          <label for="devEmail">Username / Email</label>
+          <input id="devEmail" type="text" placeholder="developer" required />
 
-      <button type="submit">Login</button>
-      <div class="error" id="authError"></div>
-    </form>
+          <label for="devPassword">Password</label>
+          <input id="devPassword" type="password" placeholder="••••••••" required />
 
-    <div class="demo-box">
-      <strong>Demo accounts:</strong><br />
-      admin / admin123<br />
-      grace / cashier123<br />
-      denis / cashier456
+          <button type="submit">Enter Admin Panel</button>
+          <div class="error" id="devLoginError"></div>
+        </form>
+
+        <div class="info-box">
+          <strong>Developer Credentials:</strong><br />
+          developer / dev123secure
+        </div>
+      </div>
     </div>
   </div>
 
+  <script>
+    function toggleSection(sectionId) {
+      document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+      clearErrors();
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.error, .success').forEach(el => el.textContent = '');
+    }
+
+    // Business Login
+    document.getElementById('businessLoginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('bizLoginError');
+      const username = document.getElementById('bizEmail').value.trim();
+      const password = document.getElementById('bizPassword').value.trim();
+
+      const result = window.BakyengaAuth.findUserByCredentials(username, password);
+      if (!result) {
+        errorEl.textContent = 'Invalid username or password.';
+        return;
+      }
+
+      window.BakyengaAuth.saveSession(result.user, result.business);
+      window.location.href = '/index.html';
+    });
+
+    // Business Registration
+    document.getElementById('businessRegistrationForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('regError');
+      const successEl = document.getElementById('regSuccess');
+
+      const businessData = {
+        businessName: document.getElementById('regBizName').value.trim(),
+        location: document.getElementById('regLocation').value.trim(),
+        email: document.getElementById('regBizEmail').value.trim(),
+        phone: document.getElementById('regPhone').value.trim(),
+        adminName: document.getElementById('regAdminName').value.trim(),
+        adminUsername: document.getElementById('regAdminUsername').value.trim(),
+        adminPassword: document.getElementById('regAdminPassword').value.trim()
+      };
+
+      if (!Object.values(businessData).every(v => v)) {
+        errorEl.textContent = 'Please fill all fields.';
+        return;
+      }
+
+      try {
+        const registration = window.BakyengaAuth.submitBusinessRegistration(businessData);
+        successEl.textContent = `✓ Registration submitted! Your request has been sent to the developer for approval. Check your email.`;
+        document.getElementById('businessRegistrationForm').reset();
+        
+        setTimeout(() => {
+          toggleSection('businessLoginSection');
+        }, 3000);
+      } catch (error) {
+        errorEl.textContent = 'Registration failed. Please try again.';
+      }
+    });
+
+    // Developer Login
+    document.getElementById('devLoginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('devLoginError');
+      const username = document.getElementById('devEmail').value.trim();
+      const password = document.getElementById('devPassword').value.trim();
+
+      const admin = window.BakyengaAuth.verifyDeveloperCredentials(username, password);
+      if (!admin) {
+        errorEl.textContent = 'Invalid developer credentials.';
+        return;
+      }
+
+      window.BakyengaAuth.saveAdminSession(admin);
+      window.location.href = '/admin-panel.html';
+    });
+  </script>
   <script src="/auth.js"></script>
 </body>
 </html>
