@@ -1,0 +1,21 @@
+{
+  "name": "ahadi-amos-mrfss-project",
+  "version": "1.0.0",
+  "description": "Bakyenga Traders POS System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "pos",
+    "traders",
+    "bakyenga",
+    "wholesale"
+  ],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": "18.x"
+  }
+}

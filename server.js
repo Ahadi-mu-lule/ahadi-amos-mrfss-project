@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = __dirname;
 
 const MIME_TYPES = {
@@ -44,7 +44,7 @@ function injectLogoutButton(html) {
   return html.replace(
     '</body>',
     `<div style="position: fixed; right: 18px; bottom: 18px; z-index: 1000;">
-       <button id="logoutBtn" style="padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(148,163,184,0.25); background: rgba(15,23,42,0.92); color: #fff; cursor: pointer; font-weight: 700;">
+       <button id="logoutBtn" style="padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(148,163,184,0.25); background: rgba(15,23,42,0.92); color: #fff; cursor: pointer; font-weight: 500;">
          Logout
        </button>
      </div>
@@ -122,7 +122,7 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, '127.0.0.1', () => {
-  console.log(`Bakyenga Traders POS is live at http://127.0.0.1:${PORT}`);
-  console.log('Login page: http://127.0.0.1:3000/login.html');
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Bakyenga Traders POS is live at http://0.0.0.0:${PORT}`);
+  console.log(`Login page: http://0.0.0.0:${PORT}/login.html`);
 });
