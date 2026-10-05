@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bakyenga POS | SaaS Login</title>
+  <style>
+    :root {
+      --bg: #07111d;
+      --card: rgba(15, 26, 44, 0.96);
+      --card-alt: #101d30;
+      --primary: #3b82f6;
+      --primary-2: #1d4ed8;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --line: rgba(148, 163, 184, 0.22);
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, #132b46, #07111d 45%);
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+    }
+
+    .auth-shell {
+      width: min(420px, 92vw);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--card);
+      box-shadow: 0 25px 60px rgba(2, 6, 23, 0.7);
+      padding: 28px 26px 22px;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .brand-badge {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 12px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.75rem;
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    form {
+      margin-top: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 8px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(15, 26, 44, 0.9);
+      color: var(--text);
+      padding: 14px 14px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: rgba(59, 130, 246, 0.75);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+    }
+
+    button {
+      width: 100%;
+      margin-top: 18px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      padding: 14px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover {
+      filter: brightness(1.05);
+    }
+
+    .demo-box {
+      margin-top: 20px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(17, 24, 39, 0.9);
+      padding: 12px 14px;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 0.83rem;
+    }
+
+    .demo-box strong {
+      color: var(--text);
+    }
+
+    .error {
+      min-height: 20px;
+      margin-top: 12px;
+      color: #fca5a5;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="brand">
+      <div class="brand-badge">BT</div>
+      <h1>BAKYENGA POS</h1>
+      <p class="subtitle">Wholesale & Retail SaaS Login</p>
+    </div>
+
+    <form id="loginForm">
+      <label for="email">Username or Email</label>
+      <input id="email" type="text" placeholder="admin or admin@bakyenga.com" required />
+
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="••••••••" required />
+
+      <button type="submit">Login</button>
+      <div class="error" id="authError"></div>
+    </form>
+
+    <div class="demo-box">
+      <strong>Demo accounts:</strong><br />
+      admin / admin123<br />
+      grace / cashier123<br />
+      denis / cashier456
+    </div>
+  </div>
+
+  <script src="/auth.js"></script>
+</body>
+</html>
